@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Previous head content remains the same -->
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Your Video</h1>
+        <form id="uploadForm">
+            <div class="drag-drop-area" id="dropZone">
+                <p>Drag & drop your video here or click to select a file</p>
+                <input type="file" id="videoInput" name="video" accept="video/*" required>
+            </div>
+
+            <input type="text" id="textInput" name="language" placeholder="Enter the desired language..." required />
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <div id="videoContainer" style="display:none;">
+            <h3>Translated Video</h3>
+            <video id="translatedVideo" controls></video>
+        </div>
+
+        <div id="loadingIndicator" style="display:none;">
+            <p>Processing your video... Please wait...</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const videoContainer = document.getElementById('videoContainer');
+        const translatedVideo = document.getElementById('translatedVideo');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const dropZone = document.getElementById('dropZone');
+
+        // Add drag and drop functionality
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = '#d1e7ff';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.backgroundColor = '#e9f7ff';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = '#e9f7ff';
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('video/')) {
+                document.getElementById('videoInput').files = e.dataTransfer.files;
+            }
+        });
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            loadingIndicator.style.display = 'block';
+            videoContainer.style.display = 'none';
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/speech-to-speech', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to upload video');
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.video_url) {
+                    translatedVideo.src = data.video_url;
+                    videoContainer.style.display = 'block';
+                } else {
+                    alert('Translation failed. Please try again.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred while uploading the video.');
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
