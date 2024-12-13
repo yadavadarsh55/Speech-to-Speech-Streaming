@@ -1,88 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Previous head content remains the same -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Translator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .upload-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .drag-drop-area {
+            position: relative;
+            padding: 2rem;
+            cursor: pointer;
+        }
+
+        .drag-drop-area.dragover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .drag-drop-area input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .selected-file {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.75rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .remove-file {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .language-section {
+            margin: 3rem 0;
+        }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .language-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .language-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .language-btn.selected {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .videos-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .videos-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .video-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .video-box h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #processingText {
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 2rem 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        @media (max-width: 768px) {
+            .videos-container {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .upload-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Upload Your Video</h1>
-        <form id="uploadForm">
-            <div class="drag-drop-area" id="dropZone">
-                <p>Drag & drop your video here or click to select a file</p>
-                <input type="file" id="videoInput" name="video" accept="video/*" required>
-            </div>
-
-            <input type="text" id="textInput" name="language" placeholder="Enter the desired language..." required />
-
-            <button type="submit">Submit</button>
-        </form>
-
-        <div id="videoContainer" style="display:none;">
-            <h3>Translated Video</h3>
-            <video id="translatedVideo" controls></video>
+        <div class="title-section">
+            <h1>✨ Magic Voice Translator ✨</h1>
+            <p>Transform your video's voice into any language, instantly!</p>
         </div>
 
-        <div id="loadingIndicator" style="display:none;">
-            <p>Processing your video... Please wait...</p>
+        <form id="uploadForm">
+            <div class="upload-section">
+                <div class="drag-drop-area" id="dropZone">
+                    <div class="upload-icon">📹</div>
+                    <h2>Drop your video here!</h2>
+                    <p>or click to choose your masterpiece</p>
+                    <input type="file" id="videoInput" name="video" accept="video/*" required>
+                    <div class="selected-file" id="selectedFile" style="display: none">
+                        <span></span>
+                        <button type="button" class="remove-file" id="removeFile">×</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="language-section">
+                <h2>Pick your target language ✨</h2>
+                <div class="language-grid">
+                    <button type="button" class="language-btn" data-lang="Spanish">🇪🇸 Spanish</button>
+                    <button type="button" class="language-btn" data-lang="French">🇫🇷 French</button>
+                    <button type="button" class="language-btn" data-lang="German">🇩🇪 German</button>
+                    <button type="button" class="language-btn" data-lang="Italian">🇮🇹 Italian</button>
+                    <button type="button" class="language-btn" data-lang="Chinese">🇨🇳 Chinese</button>
+                    <button type="button" class="language-btn" data-lang="Japanese">🇯🇵 Japanese</button>
+                    <button type="button" class="language-btn" data-lang="Korean">🇰🇷 Korean</button>
+                    <button type="button" class="language-btn" data-lang="Hindi">🇮🇳 Hindi</button>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button type="submit" class="submit-btn" disabled>✨ Transform Now ✨</button>
+            </div>
+        </form>
+
+        <div id="processingText" style="display: none;">
+            ✨ Working magic on your video... ✨
+        </div>
+
+        <div class="videos-container" id="videosContainer">
+            <div class="video-box">
+                <h3>Original Video 🎥</h3>
+                <video id="originalVideo" controls></video>
+            </div>
+            <div class="video-box">
+                <h3>Translated Video 🎬</h3>
+                <video id="translatedVideo" controls></video>
+            </div>
         </div>
     </div>
 
     <script>
         const form = document.getElementById('uploadForm');
-        const videoContainer = document.getElementById('videoContainer');
-        const translatedVideo = document.getElementById('translatedVideo');
-        const loadingIndicator = document.getElementById('loadingIndicator');
         const dropZone = document.getElementById('dropZone');
+        const videoInput = document.getElementById('videoInput');
+        const selectedFile = document.getElementById('selectedFile');
+        const removeFile = document.getElementById('removeFile');
+        const submitBtn = document.querySelector('.submit-btn');
+        const languageBtns = document.querySelectorAll('.language-btn');
+        const videosContainer = document.getElementById('videosContainer');
+        const originalVideo = document.getElementById('originalVideo');
+        const processingText = document.getElementById('processingText');
+        let selectedLanguage = '';
 
-        // Add drag and drop functionality
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.style.backgroundColor = '#d1e7ff';
+        // Handle drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults);
         });
 
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.style.backgroundColor = '#e9f7ff';
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('dragover');
+            });
         });
 
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.style.backgroundColor = '#e9f7ff';
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('dragover');
+            });
+        });
+
+        dropZone.addEventListener('drop', handleDrop);
+        videoInput.addEventListener('change', handleFileSelect);
+        removeFile.addEventListener('click', handleFileRemove);
+
+        languageBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                languageBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedLanguage = btn.dataset.lang;
+                validateForm();
+            });
+        });
+
+        function handleDrop(e) {
             const file = e.dataTransfer.files[0];
             if (file && file.type.startsWith('video/')) {
-                document.getElementById('videoInput').files = e.dataTransfer.files;
+                handleFile(file);
             }
-        });
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            selectedFile.style.display = 'inline-flex';
+            selectedFile.querySelector('span').textContent = file.name;
+            
+            // Show original video preview
+            const url = URL.createObjectURL(file);
+            originalVideo.src = url;
+            validateForm();
+        }
+
+        function handleFileRemove() {
+            videoInput.value = '';
+            selectedFile.style.display = 'none';
+            originalVideo.src = '';
+            validateForm();
+        }
+
+        function validateForm() {
+            submitBtn.disabled = !videoInput.value || !selectedLanguage;
+        }
 
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
-            loadingIndicator.style.display = 'block';
-            videoContainer.style.display = 'none';
-
-            const formData = new FormData(form);
+            
+            processingText.style.display = 'block';
+            submitBtn.disabled = true;
+            videosContainer.classList.remove('visible');
 
             try {
+                const formData = new FormData(form);
+                formData.append('language', selectedLanguage);
+                
                 const response = await fetch('/speech-to-speech', {
                     method: 'POST',
                     body: formData
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to upload video');
-                }
+                if (!response.ok) throw new Error('Translation failed');
 
                 const data = await response.json();
-
                 if (data.success && data.video_url) {
-                    translatedVideo.src = data.video_url;
-                    videoContainer.style.display = 'block';
-                } else {
-                    alert('Translation failed. Please try again.');
+                    document.getElementById('translatedVideo').src = data.video_url;
+                    videosContainer.classList.add('visible');
                 }
             } catch (error) {
                 console.error(error);
-                alert('An error occurred while uploading the video.');
+                alert('Oops! Something went wrong with the translation. Please try again!');
             } finally {
-                loadingIndicator.style.display = 'none';
+                processingText.style.display = 'none';
+                submitBtn.disabled = false;
             }
         });
     </script>
