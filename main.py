@@ -48,7 +48,7 @@ def get_LLMChain(text, target_language):
 
     prompt_template = PromptTemplate(
         input_variables=["text", "target_language"],
-        template="Translate the following text to {target_language} as if you are translating it in the real time to give it a look of a great translation:\n\n{text}"
+        template="I want you to behave like a translator, translate the given text into the language {target_language} as if you are translating it in the real time to give it a look of a great translation:, dont explain anything or say any other thing than that\n\n{text}"
     )
 
     chain = LLMChain(
