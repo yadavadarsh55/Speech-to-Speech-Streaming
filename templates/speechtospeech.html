@@ -14,7 +14,8 @@
 
         body {
             min-height: 100vh;
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            background: linear-gradient(135deg, #00113f 0%, #194186 100%);
+            animation: mymove, 10s, infinite;
             padding: 2rem;
             color: white;
         }
@@ -82,6 +83,7 @@
             margin-bottom: 2rem;
             border: 2px dashed rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease;
+            flex: 1;
         }
 
         .upload-section:hover {
@@ -97,12 +99,20 @@
 
         .drag-drop-area {
             position: relative;
-            padding: 2rem;
+            padding: 4rem;
             cursor: pointer;
+        }
+
+        .language-section-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #ffffff;
         }
 
         .language-section {
             margin: 3rem 0;
+            flex: 1;
         }
 
         .language-grid {
@@ -114,13 +124,13 @@
 
         .language-btn {
             background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 1.7px solid rgba(255, 255, 255, 0.2);
             padding: 1rem;
             border-radius: 15px;
             color: white;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 1.1rem;
+            font-size: 0.8rem;
         }
 
         .language-btn:hover {
@@ -196,6 +206,12 @@
             animation: pulse 2s infinite;
         }
 
+        .upload-and-language {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
         @keyframes pulse {
             0% { opacity: 0.6; }
             50% { opacity: 1; }
@@ -219,6 +235,12 @@
                 padding: 1.5rem;
             }
         }
+
+        @keyframes mymove {
+            from {left: 0px;}
+            to {left: 200px;}
+        }
+
     </style>
 </head>
 <body>
@@ -230,36 +252,37 @@
         </div>
 
         <form id="uploadForm">
-            <div class="upload-section">
-                <div class="drag-drop-area" id="dropZone">
-                    <div class="upload-icon">📹</div>
-                    <h2>Drop your video here!</h2>
-                    <p>or click to choose your video</p>
-                    <input type="file" id="videoInput" name="video" accept="video/*" required>
-                    <div class="selected-file" id="selectedFile" style="display: none">
-                        <span></span>
-                        <button type="button" class="remove-file" id="removeFile">×</button>
+            <div class="upload-and-language">
+                <div class="upload-section">
+                    <div class="drag-drop-area" id="dropZone">
+                        <div class="upload-icon">📹</div>
+                        <h2>Drop your video here!</h2>
+                        <p>or click to choose your video</p>
+                        <input type="file" id="videoInput" name="video" accept="video/*" required>
+                        <div class="selected-file" id="selectedFile" style="display: none">
+                            <span></span>
+                            <button type="button" class="remove-file" id="removeFile">×</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="language-grid">
-                <!-- International Languages -->
-                <button type="button" class="language-btn" data-lang="English">🇬🇧 English</button>
-                <button type="button" class="language-btn" data-lang="Spanish">🇪🇸 Spanish</button>
-                <button type="button" class="language-btn" data-lang="French">🇫🇷 French</button>
-                <button type="button" class="language-btn" data-lang="German">🇩🇪 German</button>
-                
-                <!-- Indian Languages -->
-                <button type="button" class="language-btn" data-lang="Hindi">🇮🇳 Hindi</button>
-                <button type="button" class="language-btn" data-lang="Bengali">🇮🇳 Bengali</button>
-                <button type="button" class="language-btn" data-lang="Telugu">🇮🇳 Telugu</button>
-                <button type="button" class="language-btn" data-lang="Tamil">🇮🇳 Tamil</button>
-                <button type="button" class="language-btn" data-lang="Marathi">🇮🇳 Marathi</button>
-                <button type="button" class="language-btn" data-lang="Gujarati">🇮🇳 Gujarati</button>
-                <button type="button" class="language-btn" data-lang="Kannada">🇮🇳 Kannada</button>
-                <button type="button" class="language-btn" data-lang="Malayalam">🇮🇳 Malayalam</button>
-            </div>
+                <div class="language-section">
+                    <h2 class="language-section-title">Select Language</h2>
+                    <div class="language-grid">
+                        <button type="button" class="language-btn" data-lang="English">🇬🇧 English</button>
+                        <button type="button" class="language-btn" data-lang="Spanish">🇪🇸 Spanish</button>
+                        <button type="button" class="language-btn" data-lang="French">🇫🇷 French</button>
+                        <button type="button" class="language-btn" data-lang="German">🇩🇪 German</button>
+                        <button type="button" class="language-btn" data-lang="Japanese">🇯🇵 Japanese</button>
+                        <button type="button" class="language-btn" data-lang="Korean">🇰🇷 Korean</button>
+                        <button type="button" class="language-btn" data-lang="Hindi">🇮🇳 Hindi</button>
+                        <button type="button" class="language-btn" data-lang="Bengali">🇮🇳 Bengali</button>
+                        <button type="button" class="language-btn" data-lang="Telugu">🇮🇳 Telugu</button>
+                        <button type="button" class="language-btn" data-lang="Tamil">🇮🇳 Tamil</button>
+                        <button type="button" class="language-btn" data-lang="Tamil">🇮🇳 Marathi</button>
+                        <button type="button" class="language-btn" data-lang="Tamil">🇮🇳 Kannada</button> 
+                    </div>
+                </div>
+            </div>                        
         </div>
 
         <div style="text-align: center;">
